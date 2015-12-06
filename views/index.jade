@@ -1,0 +1,58 @@
+extends layout
+
+block nav
+    nav.navbar.navbar-inverse.navbar-fixed-top
+        .container-fluid
+            .navbar-header
+                a.navbar-brand Home
+            .collapse.navbar-collapse
+                ui.nav.navbar-nav
+                    li
+                        a D3
+                    li
+                        a Banana
+                    li
+                        a FacetView
+
+
+block content
+    
+    form(method="get").form-inline
+        .form-group
+            input(type="text" name="q" value="#{query}").form-control
+        button#search.btn.btn-default Search
+    
+    
+    ul(role="tablist").nav.nav-tabs
+        li(role="presentation").active
+            a(href="#cloud" aria-controls="cloud" role="tab" data-toggle="tab") WordCloud
+        li(role="presentation")
+            a(href="#barchart" aria-controls="barchart" role="tab" data-toggle="tab") BarChart
+        li(role="presentation")
+            a(href="#ringtree" aria-controls="ringtree" role="tab" data-toggle="tab") RingTree
+        li(role="presentation")
+            a(href="#bubblechart" aria-controls="bubblechart" role="tab" data-toggle="tab") BubbleChart
+        li(role="presentation")
+            a(href="#pie" aria-controls="pie" role="tab" data-toggle="tab") PieChart
+        li(role="presentation")
+            a(href="#map" aria-controls="map" role="tab" data-toggle="tab") Map
+    
+    .tab-content
+        #cloud.tab-pane.active(role="tabpanel")
+        #barchart.tab-pane(role="tabpanel")
+        #ringtree.tab-pane(role="tabpanel")
+        #bubblechart.tab-pane(role="tabpanel")
+        #pie.tab-pane(role="tabpanel")
+        #map.tab-pane(role="tabpanel")
+        
+        
+        
+    script(src="/javascripts/d3Map.js")
+    script(src="/javascripts/d3BarChart.js")
+    script(src="/javascripts/d3RingTree.js")
+    script(src="/javascripts/d3BubbleChart.js")
+    script(src="/javascripts/d3cloud.js")
+    script(src="/javascripts/d3Pie.js")
+    
+
+    
