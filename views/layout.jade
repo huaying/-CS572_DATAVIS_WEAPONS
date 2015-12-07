@@ -3,10 +3,12 @@ html
   head
     title Visual Search USC CS572
     link(rel='stylesheet', href='/stylesheets/style.css')
-    link(rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"  integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous")
+    link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"  integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous")
+    link(rel='stylesheet', href="/stylesheets/bootstrap-select.min.css")
     script(src="//d3js.org/d3.v3.min.js")
     script(src="/javascripts/d3.layout.cloud.js")
     script(src="http://d3js.org/topojson.v1.min.js")
+    script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js")
     script(type="text/javascript").
             var getUrlParameter = function getUrlParameter(sParam) {
                 var sPageURL = decodeURIComponent(window.location.search.substring(1)),
@@ -86,16 +88,17 @@ html
         .nav-tabs {
             padding-top:30px;
         }
-        #barchart {
+        #barchart svg {
             font: 8px sans-serif;   
         }
   body
     block nav
-    
     block content
-    script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js")
+    
     script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous")
+    script(src="/javascripts/bootstrap-select.min.js")
     script(type="text/javascript").
+        $('.selectpicker').selectpicker()
         
 //        $("ul.nav-tabs > li > a").on("shown.bs.tab", function (e) {
 //            var id = $(e.target).attr("href").substr(1);
@@ -103,4 +106,4 @@ html
 //        });
 //
 //        var hash = window.location.hash;
-//        $('#myTab a[href="' + hash + '"]').tab('show');
+//        $('#myTab a[href="' + hash + '"]').tab('show'); 

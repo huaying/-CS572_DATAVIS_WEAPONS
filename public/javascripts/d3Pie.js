@@ -3,11 +3,10 @@
 // d3 actionsssss		
 //var data=[{"lang":"mip","count":24},{"lang":"theft","count":558},{"lang":"drugs","count":81},{"lang":"arson","count":3},{"lang":"assault","count":80},{"lang":"burglary","count":49},{"lang":"disorderlyConduct","count":63},{"lang":"mischief","count":189},{"lang":"dui","count":107},{"lang":"resistingArrest","count":11},{"lang":"sexCrimes","count":24},{"lang":"other","count":58}];
 
-var query = getUrlParameter('q')
-var jsonPath = "/solrJson/d3pie"
-    if (query){
-        jsonPath += "?q=" + encodeURIComponent(query)
-    }    
+    var query = getUrlParameter('q')
+    var year = getUrlParameter('year')
+    var jsonPath = "/solrJson/d3pie"
+    jsonPath += "?"+ $.param({"q":query,"year":year})   
     
 var width = 500,
     height = 500,
@@ -28,6 +27,7 @@ var pie = d3.layout.pie()
 
 d3.json(jsonPath, function(error, data) {
     if (error) throw error
+    $("#pie").append(" <div>Documents(Weapons) v.s Weapon Maufacturers</div>")
     
     var svg = d3.select("#pie").append("svg")
     .attr("width", width)

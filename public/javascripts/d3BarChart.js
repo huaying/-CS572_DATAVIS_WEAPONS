@@ -1,11 +1,9 @@
 (function () {
     
     var query = getUrlParameter('q')
+    var year = getUrlParameter('year')
     var jsonPath = "/solrJson/d3BarChart"
-    if (query){
-        jsonPath += "?q=" + encodeURIComponent(query)
-    }
-            
+    jsonPath += "?"+ $.param({"q":query,"year":year})   
     
 var margin = {top: 40, right: 20, bottom: 30, left: 40},
     width = 800 - margin.left - margin.right,
@@ -28,7 +26,7 @@ var yAxis = d3.svg.axis()
     .orient("left")
     .tickFormat(formatPercent);
 
-
+$("#barchart").append(" <div>Documents(Weapon) v.s Locations</div>")
 var svg = d3.select("#barchart").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
@@ -37,6 +35,7 @@ var svg = d3.select("#barchart").append("svg")
 
 
 d3.json(jsonPath, function(error, data) {
+    console.log(data)
   data.reverse()
   x.domain(data.map(function(d) { return d.name; }));
   y.domain([0, d3.max(data, function(d) { return d.count; })]);

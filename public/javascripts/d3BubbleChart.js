@@ -1,11 +1,9 @@
 (function(){
 
     var query = getUrlParameter('q')
+    var year = getUrlParameter('year')
     var jsonPath = "/solrJson/d3BubbleChart"
-    if (query){
-        jsonPath += "?q=" + encodeURIComponent(query)
-    }
-            
+    jsonPath += "?"+ $.param({"q":query,"year":year})  
     
 var diameter = 600,
     format = d3.format(",d"),
@@ -15,14 +13,14 @@ var bubble = d3.layout.pack()
     .sort(null)
     .size([diameter, diameter])
     .padding(1.5);
-
+    
+ $("#bubblechart").append(" <div>Documents v.s Important Keywords</div>")
 var svg = d3.select("#bubblechart").append("svg")
     .attr("width", diameter)
     .attr("height", diameter)
     .attr("class", "bubble");
 
 d3.json(jsonPath, function(error, root) {
-    console.log(root)
   if (error) throw error;
 
   var node = svg.selectAll(".node")

@@ -24,35 +24,45 @@ var httpGet = function (path,callback,data) {
     });
 }
 
-var getQuery = function(query){
-    if(!query){
-        return "*%3A*"
+var getQuery = function(q, year){
+    var query = "*:*"
+    if(q){
+        query = q.replace(/\+/g," ")
     }
+    if(year && ["2015","2014","2013","2012","2011","2010","2009"].indexOf(year) != -1){
+        query += " AND seller-member-startDate:["+year+"-01-01T00:00:00Z TO "+(parseInt(year)+1)+"-01-01T00:00:00Z]"
+    }
+    
+    //return query
     return encodeURIComponent(query)
 }
 
-var d3pie = function (callback,query) {
+var d3pie = function (callback,query,year) {
     var jsonRlt = []
-    var path =  '/solr/gettingstarted_shard1_replica2/select?q='+getQuery(query)+'&rows=0&wt=json&indent=true&facet=true&facet.field=itemOffered-manufacturer'
+    var path =  '/solr/gettingstarted_shard1_replica2/select?q='+getQuery(query,year)+'&rows=0&wt=json&indent=true&facet=true&facet.field=itemOffered-manufacturer'
+    console.log(path)
     httpGet(path, function(jsonOriginal){
         jsonOriginal = jsonOriginal.facet_counts.facet_fields["itemOffered-manufacturer"]
 
             var loop_num = Math.min(jsonOriginal.length, 20)
             for (var i = 0; i < loop_num; i += 2) {
-                jsonRlt.push({
-                    "lang": jsonOriginal[i] + ":  " + jsonOriginal[i + 1],
-                    "count": jsonOriginal[i + 1]
-                })
+                if ( jsonOriginal[i + 1] != 0 ){
+                    jsonRlt.push({
+                        "lang": jsonOriginal[i],
+                        "count": jsonOriginal[i + 1]
+                    })
+                }
             }
             callback(jsonRlt)
     })
 }
 
-var d3BubbleChart = function (callback,query) {
+var d3BubbleChart = function (callback,query,year) {
 
     var jsonRlt = {}
     var arr = []
-    var path =  '/solr/gettingstarted_shard1_replica2/select?q='+getQuery(query)+'&rows=0&wt=json&indent=true&facet=true&facet.field=itemOffered-keywords'
+    var path =  '/solr/gettingstarted_shard1_replica2/select?q='+getQuery(query,year)+'&rows=0&wt=json&indent=true&facet=true&facet.field=itemOffered-keywords'
+    console.log(path)
     httpGet(path, function(jsonOriginal){
         jsonOriginal = jsonOriginal.facet_counts.facet_fields["itemOffered-keywords"]
 
@@ -71,29 +81,38 @@ var d3BubbleChart = function (callback,query) {
     })
 }
 
-var d3cloud = function (callback,query) {
+var d3cloud = function (callback,query,year) {
 
     var jsonRlt = []
-    var path = '/solr/gettingstarted_shard1_replica2/select?q='+getQuery(query)+'&rows=0&wt=json&indent=true&facet=true&facet.field=itemOffered-keywords'
+    var path = '/solr/gettingstarted_shard1_replica2/select?q='+getQuery(query,year)+'&rows=0&wt=json&indent=true&facet=true&facet.field=itemOffered-keywords'
     //var path = '/solr/gettingstarted_shard1_replica2/select?q=&rows=0&wt=json&indent=true&facet=true&facet.field=itemOffered-keywords'
+    console.log(path)
     httpGet(path, function(jsonOriginal){
         jsonOriginal = jsonOriginal.facet_counts.facet_fields["itemOffered-keywords"]
 
         var loop_num = Math.min(jsonOriginal.length, 20000)
+        var size_arr = []
         for (var i = 0; i < loop_num; i += 2) {
             jsonRlt.push({
                 "text": jsonOriginal[i],
-                "size": Math.sqrt(jsonOriginal[i + 1])
+                "size": jsonOriginal[i + 1]
             })
+            size_arr.push(jsonOriginal[i + 1])
         }
+        var size_max = size_arr.reduce(function(a,b){return ( a > b ? a : b )})
+        jsonRlt = jsonRlt.map(function(obj){
+            obj.size = obj.size/size_max * 100
+            return obj
+        })
         callback(jsonRlt)
     })
 }
 
-var d3RingTree = function (callback,query) {
+var d3RingTree = function (callback,query,year) {
 
     var jsonRlt = []
-    var path = '/solr/gettingstarted_shard1_replica2/select?q='+getQuery(query)+'&rows=0&wt=json&indent=true&facet=true&facet.field=itemOffered-manufacturer'
+    var path = '/solr/gettingstarted_shard1_replica2/select?q='+getQuery(query,year)+'&rows=0&wt=json&indent=true&facet=true&facet.field=itemOffered-manufacturer'
+    console.log(path)
     httpGet(path, function(jsonOriginal){
         jsonOriginal = jsonOriginal.facet_counts.facet_fields["itemOffered-manufacturer"]
 
@@ -122,10 +141,11 @@ var d3RingTree = function (callback,query) {
 }
 
 
-var d3BarChart = function (callback,query) {
+var d3BarChart = function (callback,query,year) {
     
     var jsonRlt = []
-    var path =  '/solr/gettingstarted_shard1_replica2/select?q='+getQuery(query)+'&rows=10&wt=json&indent=true&facet=true&facet.field=tika_location-name'
+    var path =  '/solr/gettingstarted_shard1_replica2/select?q='+getQuery(query,year)+'&rows=10&wt=json&indent=true&facet=true&facet.field=tika_location-name'
+    console.log(path)
     httpGet(path, function(jsonOriginal){
         jsonOriginal = jsonOriginal.facet_counts.facet_fields["tika_location-name"]
 
@@ -148,9 +168,10 @@ var d3BarChart = function (callback,query) {
 }
 
 
-var d3Map = function (callback,query) {
+var d3Map = function (callback,query,year) {
     var jsonRlt = []
-    var path =  '/solr/gettingstarted_shard1_replica2/select?q='+getQuery(query)+'&fl=fallsWithinCountry-geo-lon%2CfallsWithinCountry-geo-lat&wt=json&indent=true&rows=20000'
+    var path =  '/solr/gettingstarted_shard1_replica2/select?q='+getQuery(query,year)+'&fl=fallsWithinCountry-geo-lon%2CfallsWithinCountry-geo-lat&wt=json&indent=true&rows=40000'
+    console.log("map:"+path)
     httpGet(path, function(jsonOriginal){
         jsonOriginal = jsonOriginal.response.docs
 
@@ -170,44 +191,51 @@ var d3Map = function (callback,query) {
 
 router.get('/d3pie', function (req, res, next) {
     query = req.query.q
+    year = req.query.year
     d3pie(function (jsonRlt) {
         res.json(jsonRlt)
-    },query)
+    },query,year)
 })
 
 router.get('/d3BubbleChart', function (req, res, next) {
     query = req.query.q
+    year = req.query.year
     d3BubbleChart(function (jsonRlt) {
         res.json(jsonRlt)
-    },query)
+    },query,year)
 })
 
 router.get('/d3cloud', function (req, res, next) {
     query = req.query.q
+    year = req.query.year
     d3cloud(function (jsonRlt) {
+        console.log(jsonRlt)
         res.json(jsonRlt)
-    },query)
+    },query,year)
 })
 
 router.get('/d3RingTree', function (req, res, next) {
     query = req.query.q
+    year = req.query.year
     d3RingTree(function (jsonRlt) {
         res.json(jsonRlt)
-    },query)
+    },query,year)
 })
 
 router.get('/d3BarChart', function (req, res, next) {
     query = req.query.q
+    year = req.query.year
     d3BarChart(function (jsonRlt) {
         res.json(jsonRlt)
-    },query)
+    },query,year)
 })
 
 router.get('/d3Map', function (req, res, next) {
     query = req.query.q
+    year = req.query.year
     d3Map(function (jsonRlt) {
         res.json(jsonRlt)
-    },query)
+    },query,year)
 })
 
 module.exports = router;

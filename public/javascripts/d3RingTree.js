@@ -58,12 +58,10 @@
 //         ]
 //     }]
 //}   
-    
-var query = getUrlParameter('q')
-var jsonPath = "/solrJson/d3RingTree"
-    if (query){
-        jsonPath += "?q=" + encodeURIComponent(query)
-    }    
+    var query = getUrlParameter('q')
+    var year = getUrlParameter('year')
+    var jsonPath = "/solrJson/d3RingTree"
+    jsonPath += "?"+ $.param({"q":query,"year":year}) 
         
 
 var diameter = 800;
@@ -75,6 +73,7 @@ var tree = d3.layout.tree()
 var diagonal = d3.svg.diagonal.radial()
     .projection(function(d) { return [d.y, d.x / 180 * Math.PI]; });
 
+$("#ringtree").append(" <div>Weapon Maufacturers v.s Their Documents(Weapons)</div>")
 var svg = d3.select("#ringtree").append("svg")
     .attr("width", diameter)
     .attr("height", diameter)
@@ -84,6 +83,8 @@ var svg = d3.select("#ringtree").append("svg")
 d3.json(jsonPath, function(error, root) {
   if (error) throw error;
 
+  
+  
   var nodes = tree.nodes(root),
       links = tree.links(nodes);
 

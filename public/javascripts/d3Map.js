@@ -1,11 +1,10 @@
 (function () {
     
     var query = getUrlParameter('q')
+    var year = getUrlParameter('year')
     var jsonPath = "/solrJson/d3Map"
-    if (query){
-        jsonPath += "?q=" + encodeURIComponent(query)
-    }
-        
+    jsonPath += "?"+ $.param({"q":query,"year":year})
+    
     var width = 800,
         height = 400;
 
@@ -19,7 +18,8 @@
 
     d3.json("us.json", function (error, topo) {
         d3.json(jsonPath, function (error, data) {
-            //console.log(data)
+            $("#map").append(" <div>Document v.s Location</div>")
+            $("#map").append(" <div>Total Number of Documents: "+data.length+"</div>")
             states = topojson.feature(topo, topo.objects.states).features
 
             // set projection parameters
